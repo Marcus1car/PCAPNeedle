@@ -1,2 +1,2 @@
 # PCAPNeedle 
-Tool for mattern match anypcap file
+Forensic tool for PCAP file anlysis and pattern matching.
