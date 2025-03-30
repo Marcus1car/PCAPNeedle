@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  pcapneedle:
+    build: .
+    volumes:
+      - ./pcaps:/data
+      - ./output:/app/output
+    environment:
+      - PCAP_FILE=/data/sample.pcap
+      - PATTERN="secret"
+      - PROTOCOL=TCP
+      - IGNORE_CASE=false
+    command: [
+      "sh", "-c", 
+      "python pcapneedle.py $${PCAP_FILE} $${PATTERN} \
+      $${IGNORE_CASE:+-i} $${PROTOCOL:+-p $${PROTOCOL}} -o /app/output/results.json"
+    ]

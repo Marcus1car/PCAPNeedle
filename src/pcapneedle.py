@@ -2,6 +2,7 @@
     
 import argparse
 import re
+import os
 import json
 from scapy.all import PcapReader, Raw, IP
 from scapy.config import conf
@@ -42,8 +43,12 @@ def main():
     parser.add_argument('-p', '--protocol', help='Filter by protocol')
     args = parser.parse_args()
 
+    # Ensure output file always goes in the output directory
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, os.path.basename(args.output))
+    
     try:
-        
         # compile regex and validate protocol
         flags = re.IGNORECASE if args.ignore_case else 0
         args.regex = re.compile(args.pattern, flags)
@@ -55,9 +60,9 @@ def main():
             results = pool.starmap(process_packet, [(pkt, args) for pkt in packets])
         # save to result.json
         matches = [res for res in results if res]
-        with open(args.output, "w") as f:
+        with open(output_file, "w") as f:
             json.dump(matches, f, indent=2)
-        print(f"[+] Results saved to {args.output}")
+        print(f"[+] Results saved to {output_file}")
 
     except Exception as e:
         print(f"Error: {str(e)}")
