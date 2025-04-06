@@ -1,16 +1,23 @@
 services:
   pcapneedle:
-    build: .
+    container_name: pcapneedle
+    build: 
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - ./pcaps:/data
+      - ./pcaps:/data:ro  # read only
       - ./output:/app/output
+      - ./tests:/tests:ro # read only
     environment:
-      - PCAP_FILE=/data/sample.pcap
-      - PATTERN="secret"
-      - PROTOCOL=TCP
-      - IGNORE_CASE=false
+      - PCAP_FILE=${PCAP_FILE:-/data/sample.pcap}
+      - PATTERN=${PATTERN:-secret}
+      - PROTOCOL=${PROTOCOL:-}
+      - IGNORE_CASE=${IGNORE_CASE:-false}
+      - OUTPUT_FILE=${OUTPUT_FILE:-/app/output/results.json}
     command: [
       "sh", "-c", 
-      "python pcapneedle.py $${PCAP_FILE} $${PATTERN} \
-      $${IGNORE_CASE:+-i} $${PROTOCOL:+-p $${PROTOCOL}} -o /app/output/results.json"
+      "python pcapneedle.py $${PCAP_FILE} \"$${PATTERN}\" \
+      $${IGNORE_CASE:+-i} $${PROTOCOL:+-p $${PROTOCOL}} -o $${OUTPUT_FILE}"
     ]
+    restart: "no"  
+    user: "1000:1000"  # Run as non-root 

@@ -1,9 +1,5 @@
 # PCAPNeedle     
 
-![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Scapy](https://img.shields.io/badge/Scapy-220000?style=for-the-badge&logo=python&logoColor=white)
-
 Forensic tool for PCAP file analysis and pattern matching.
 
 CLI tool for fast pattern searching in network packet captures (PCAP files).     
@@ -16,10 +12,10 @@ A `grep` for network traffic analysis, with protocol-aware filtering and JSON ou
 - **Performance Optimized**: Multiprocessing for faster analysis of large captures
 - **Docker Sandboxing**: Containerized execution for portability
 - **Structured Output**: JSON results for automated processing and integration
-- **Case Sensitivity Control**: Configurable case-sensitive or insensitive searching
+- **Case Sensitivity Control**: Configurable case-sensitive or insensitive searching with the addition of `-i`
 
 
-## Architecture 🏗  
+## File Structure 🏗  
 ```
 .
 ├── Dockerfile
@@ -27,9 +23,9 @@ A `grep` for network traffic analysis, with protocol-aware filtering and JSON ou
 ├── requirements.txt
 ├── src/
 │   └── pcapneedle.py  
-├── pcaps/                 # Mount your PCAP files here
+├── pcaps/                 # Add your PCAP's files here
 ├── output/                # Results are stored here
-├── tests/                 # Sample PCAP's for testing
+├── tests/                 # Sample PCAP's files for testing
 │   ├── http_login.pcap
 │   └── test_http.pcap
 └── README.md
@@ -41,24 +37,24 @@ A `grep` for network traffic analysis, with protocol-aware filtering and JSON ou
 
 ```bash
 mkdir -p pcaps output
-docker-compose build
+docker compose build
 ```    
 
-**2. Basic Pattern Search**     
+**2. Basic Pattern Search with a custom output**     
 ```bash
-docker-compose run --rm pcapneedle \
-  /data/http_traffic.pcap "password" -o findings.json
+docker compose run --rm pcapneedle \
+  /tests/http_login.pcap "password" -o findings.json
 ```
 
 **3. Protocol-Filtered Analysis**      
 ```bash
-docker-compose run --rm pcapneedle \
+docker compose run --rm pcapneedle \
   /data/dns_logs.pcap "malware.com" -p DNS
 ```
 
 **4. Case-Insensitive Search**
 ```bash
-docker-compose run --rm pcapneedle \
+docker compose run --rm pcapneedle \
   /data/http_traffic.pcap "login" -i
 ```
 
@@ -70,16 +66,28 @@ python src/pcapneedle.py /path/to/capture.pcap "pattern" -p HTTP -i -o output/re
 
 ## Configuration and Usage 🔧 
 
+**Command Options**     
+| Option          | Description                          | Example               |
+|-----------------|--------------------------------------|-----------------------|
+| `-o`, `--output` | Output file path                     | `-o results.json`     |
+| `-i`, `--ignore-case` | Case-insensitive search          | `-i "admin"`         |
+| `-p`, `--protocol` | Filter by protocol layer          | `-p HTTP`            |
+
+## Supported Protocols 🌐
+`TCP`, `UDP`, `HTTP`, `DNS`, `ARP`, `ICMP`, `SSL/TLS`, and [all Scapy-supported layers](https://scapy.readthedocs.io/en/latest/layers.html)
+
+
 **Environment Variables**
 
 Configure the tool using environment variables in the docker-compose.yaml file:
 
 ```yaml
 environment:
-  - PCAP_FILE=/data/sample.pcap
-  - PATTERN="secret"
-  - PROTOCOL=TCP
-  - IGNORE_CASE=false
+  - PCAP_FILE=${PCAP_FILE:-/data/sample.pcap}
+  - PATTERN=${PATTERN:-secret}
+  - PROTOCOL=${PROTOCOL:-}
+  - IGNORE_CASE=${IGNORE_CASE:-false}
+  - OUTPUT_FILE=${OUTPUT_FILE:-/app/output/results.json}
 ```
 
 **Output Format**     
@@ -102,20 +110,20 @@ The tool generates structured JSON output with the following fields:
 **Finding Login Credentials**
 
 ```bash
-docker-compose run --rm pcapneedle \
+docker compose run --rm pcapneedle \
   /data/http_traffic.pcap "username|password" -p HTTP
 ```
 
 **Detecting API Keys**
 
 ```bash
-docker-compose run --rm pcapneedle \
+docker compose run --rm pcapneedle \
   /data/api_traffic.pcap "api[-_]?key" -i
 ```
 
 **Scanning for Email Addresses**
 
 ```bash
-docker-compose run --rm pcapneedle \
+docker compose run --rm pcapneedle \
   /data/smtp_traffic.pcap "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
 ```
