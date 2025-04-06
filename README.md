@@ -73,7 +73,7 @@ python src/pcapneedle.py /path/to/capture.pcap "pattern" -p HTTP -i -o output/re
 | `-i`, `--ignore-case` | Case-insensitive search          | `-i "admin"`         |
 | `-p`, `--protocol` | Filter by protocol layer          | `-p HTTP`            |
 
-## Supported Protocols 🌐
+**Supported Protocols 🌐**    
 `TCP`, `UDP`, `HTTP`, `DNS`, `ARP`, `ICMP`, `SSL/TLS`, and [all Scapy-supported layers](https://scapy.readthedocs.io/en/latest/layers.html)
 
 
