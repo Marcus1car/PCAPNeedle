@@ -27,7 +27,8 @@ A `grep` for network traffic analysis, with protocol-aware filtering and JSON ou
 ├── output/                # Results are stored here
 ├── tests/                 # Sample PCAP's files for testing
 │   ├── http_login.pcap
-│   └── test_http.pcap
+│   ├── pe_file.pcap  
+│   └── fragmented.pcap
 └── README.md
 ```
 
@@ -38,7 +39,7 @@ A `grep` for network traffic analysis, with protocol-aware filtering and JSON ou
 ```bash
 mkdir -p pcaps output
 docker compose build
-```    
+```     
 
 **2. Basic Pattern Search with a custom output**     
 ```bash
@@ -49,7 +50,7 @@ docker compose run --rm pcapneedle \
 **3. Protocol-Filtered Analysis**      
 ```bash
 docker compose run --rm pcapneedle \
-  /data/dns_logs.pcap "malware.com" -p DNS
+  /tests/SkypeIRC.cap "malware.com" -p DNS
 ```
 
 **4. Case-Insensitive Search**
@@ -73,8 +74,10 @@ python src/pcapneedle.py /path/to/capture.pcap "pattern" -p HTTP -i -o output/re
 | `-i`, `--ignore-case` | Case-insensitive search          | `-i "admin"`         |
 | `-p`, `--protocol` | Filter by protocol layer          | `-p HTTP`            |
 
-**Supported Protocols 🌐**    
-`TCP`, `UDP`, `HTTP`, `DNS`, `ARP`, `ICMP`, `SSL/TLS`, and [all Scapy-supported layers](https://scapy.readthedocs.io/en/latest/layers.html)
+**Supported Protocols**  
+PCAPNeedle supports all Scapy protocol layers including:  
+`TCP`, `UDP`, `HTTP`, `DNS`, `TLS`, `ARP`, `ICMP`  
+*For full protocol list see [Scapy Layer Documentation](https://scapy.readthedocs.io/en/latest/api/scapy.layers.html)*
 
 
 **Environment Variables**
@@ -111,7 +114,7 @@ The tool generates structured JSON output with the following fields:
 
 ```bash
 docker compose run --rm pcapneedle \
-  /data/http_traffic.pcap "username|password" -p HTTP
+  /data/http_traffic.pcap "username|password" -p TCP
 ```
 
 **Detecting API Keys**

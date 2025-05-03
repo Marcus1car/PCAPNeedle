@@ -4,6 +4,7 @@ import argparse
 import re
 import os
 import json
+import sys
 from scapy.all import PcapReader, Raw, IP
 from scapy.config import conf
 from multiprocessing import Pool, cpu_count
@@ -36,14 +37,14 @@ def process_packet(packet, args):
 
 def main():
     parser = argparse.ArgumentParser(description='Search for patterns in PCAP files')
+    parser.add_argument("pcap_file", help="Path to pcap file")
+    parser.add_argument("pattern", help="Pattern to search for")
+    parser.add_argument("-i", "--ignore-case", action='store_true', help="Case-insensitive search")
+    parser.add_argument("-p", "--protocol", help="Filter by protocol")
     parser.add_argument("-o", "--output", default="output.json", help="Output JSON file")
-    parser.add_argument('pcap_file', help='Path to pcap file')
-    parser.add_argument('pattern', help='Pattern to search for')
-    parser.add_argument('-i', '--ignore-case', action='store_true', help='Case-insensitive search')
-    parser.add_argument('-p', '--protocol', help='Filter by protocol')
-    args = parser.parse_args()
-
-    # Ensure output file always goes in the output directory
+    
+    # Filter out empty arguments from Docker
+    args = parser.parse_args([arg for arg in sys.argv[1:] if arg != ''])
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, os.path.basename(args.output))

@@ -1,0 +1,10 @@
+[
+  {
+    "source_ip": "192.168.1.100",
+    "source_port": 52123,
+    "destination_ip": "93.184.216.34",
+    "destination_port": 80,
+    "matched_pattern": "password",
+    "payload_snippet": "POST /login HTTP/1.1\r\nHost: example.com\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Le"
+  }
+]
